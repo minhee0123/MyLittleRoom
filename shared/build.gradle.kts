@@ -66,6 +66,9 @@ kotlin {
             // Serialization
             implementation(libs.kotlinx.serialization.json)
 
+            // DateTime
+            implementation(libs.kotlinx.datetime)
+
             // Lifecycle
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
