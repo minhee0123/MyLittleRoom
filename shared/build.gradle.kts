@@ -52,12 +52,6 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 
-            // Ktor
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.json)
-            implementation(libs.ktor.client.logging)
-
             // Coroutines
             api(libs.kotlinx.coroutines.core)
 
@@ -73,12 +67,7 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
-        }
-
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
         }
     }
 }

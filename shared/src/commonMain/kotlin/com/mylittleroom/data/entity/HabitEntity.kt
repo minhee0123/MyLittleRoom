@@ -10,7 +10,6 @@ data class HabitEntity(
     val id: Long = 0,
     val title: String,
     val emoji: String,
-    val isCompleted: Boolean = false,
-    val currentStreak: Int = 0,
+    val repeatDays: String = "0,1,2,3,4,5,6", // 0=Mon..6=Sun, CSV
     val createdAt: Long = Clock.System.now().toEpochMilliseconds()
 )

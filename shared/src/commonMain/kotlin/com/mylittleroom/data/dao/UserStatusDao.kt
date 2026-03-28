@@ -18,7 +18,4 @@ interface UserStatusDao {
 
     @Query("UPDATE user_status SET level = :level, currentExp = :exp WHERE id = 1")
     suspend fun updateLevelAndExp(level: Int, exp: Int)
-
-    @Query("UPDATE user_status SET unlockedFurnitureIds = :furnitureIds WHERE id = 1")
-    suspend fun updateUnlockedFurniture(furnitureIds: String)
 }

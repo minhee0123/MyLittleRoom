@@ -26,13 +26,4 @@ interface HabitDao {
 
     @Query("SELECT * FROM habits WHERE id = :id")
     suspend fun getHabitById(id: Long): HabitEntity?
-
-    @Query("UPDATE habits SET isCompleted = :isCompleted WHERE id = :id")
-    suspend fun updateCompletion(id: Long, isCompleted: Boolean)
-
-    @Query("UPDATE habits SET currentStreak = :streak WHERE id = :id")
-    suspend fun updateStreak(id: Long, streak: Int)
-
-    @Query("UPDATE habits SET isCompleted = 0")
-    suspend fun resetAllCompletions()
 }
