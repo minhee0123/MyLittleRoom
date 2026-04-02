@@ -61,6 +61,17 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.koin.android)
+
+            // Glance Widget
+            implementation(libs.glance.appwidget)
+            implementation(libs.glance.material3)
+
+            // WorkManager
+            implementation(libs.work.runtime)
+
+            // Room (needed for widget direct DB access)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
     }
 }

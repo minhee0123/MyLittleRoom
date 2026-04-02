@@ -18,4 +18,7 @@ interface UserStatusDao {
 
     @Query("UPDATE user_status SET level = :level, currentExp = :exp WHERE id = 1")
     suspend fun updateLevelAndExp(level: Int, exp: Int)
+
+    @Query("SELECT * FROM user_status WHERE id = 1")
+    suspend fun getUserStatusOnce(): UserStatusEntity?
 }
