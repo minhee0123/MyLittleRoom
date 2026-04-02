@@ -1,8 +1,12 @@
 package com.mylittleroom.ui.screen
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,14 +35,21 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mylittleroom.domain.RewardEvent
+import com.mylittleroom.ui.component.RewardDialog
 import com.mylittleroom.ui.viewmodel.HabitListViewModel
 import com.mylittleroom.ui.viewmodel.HabitWithStatus
 import org.koin.compose.viewmodel.koinViewModel
@@ -49,6 +60,20 @@ fun HabitListScreen(
     viewModel: HabitListViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var currentReward by remember { mutableStateOf<RewardEvent?>(null) }
+
+    LaunchedEffect(Unit) {
+        viewModel.rewardEvents.collect { event ->
+            currentReward = event
+        }
+    }
+
+    currentReward?.let { event ->
+        RewardDialog(
+            event = event,
+            onDismiss = { currentReward = null }
+        )
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -140,24 +165,36 @@ private fun HabitCard(
             MaterialTheme.colorScheme.surfaceVariant
     )
 
+    // Scale-up animation on press
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        animationSpec = spring(stiffness = 500f)
+    )
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .scale(scale),
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onToggle)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = onToggle
+                )
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Emoji
             Text(text = habitWithStatus.habit.emoji, fontSize = 32.sp)
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Title & streak
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = habitWithStatus.habit.title,
@@ -175,7 +212,6 @@ private fun HabitCard(
                 }
             }
 
-            // Check indicator
             Box(
                 modifier = Modifier
                     .size(36.dp)
@@ -200,7 +236,6 @@ private fun HabitCard(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Delete button
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                 Icon(
                     Icons.Default.Delete,

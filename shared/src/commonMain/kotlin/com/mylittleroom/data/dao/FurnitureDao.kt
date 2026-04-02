@@ -27,4 +27,7 @@ interface FurnitureDao {
 
     @Query("UPDATE furniture SET isPlaced = 0, slotPosition = NULL WHERE slotPosition = :slot")
     suspend fun clearSlot(slot: String)
+
+    @Query("SELECT * FROM furniture WHERE isUnlocked = 0")
+    suspend fun getLockedFurniture(): List<FurnitureEntity>
 }

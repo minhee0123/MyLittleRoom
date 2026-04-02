@@ -1,5 +1,12 @@
 package com.mylittleroom.ui.screen
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,7 +34,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mylittleroom.domain.model.CharacterStage
@@ -57,7 +67,11 @@ fun CharacterRoomScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        RoomArea(characterStage = uiState.characterStage)
+        RoomArea(
+            characterStage = uiState.characterStage,
+            allCompleted = uiState.todayHabitsTotal > 0 &&
+                    uiState.todayHabitsCompleted == uiState.todayHabitsTotal
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -138,7 +152,7 @@ private fun StatusBar(level: Int, currentExp: Int, maxExp: Int, characterStage: 
 }
 
 @Composable
-private fun RoomArea(characterStage: CharacterStage) {
+private fun RoomArea(characterStage: CharacterStage, allCompleted: Boolean) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,9 +167,10 @@ private fun RoomArea(characterStage: CharacterStage) {
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = characterStage.emoji,
-                    fontSize = 72.sp
+                // Animated character
+                AnimatedCharacter(
+                    emoji = characterStage.emoji,
+                    isHappy = allCompleted
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
@@ -165,13 +180,45 @@ private fun RoomArea(characterStage: CharacterStage) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = characterStage.description,
+                    text = if (allCompleted) "오늘의 습관을 모두 완료했어요!" else characterStage.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    color = if (allCompleted)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
             }
         }
     }
+}
+
+@Composable
+private fun AnimatedCharacter(emoji: String, isHappy: Boolean) {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    // Floating bounce animation
+    val offsetY by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = if (isHappy) -12f else -6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = if (isHappy) 600 else 1200),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    // Scale pulse when happy
+    val scale by animateFloatAsState(
+        targetValue = if (isHappy) 1.1f else 1f,
+        animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
+    )
+
+    Text(
+        text = emoji,
+        fontSize = 72.sp,
+        modifier = Modifier
+            .offset { IntOffset(0, offsetY.toInt()) }
+            .scale(scale)
+    )
 }
 
 @Composable
@@ -235,10 +282,15 @@ private fun FurnitureSlot(emoji: String, label: String, isOccupied: Boolean) {
 
 @Composable
 private fun TodayHabitsSummary(completed: Int, total: Int) {
+    val allDone = completed == total && total > 0
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = if (allDone)
+                MaterialTheme.colorScheme.tertiaryContainer
+            else
+                MaterialTheme.colorScheme.secondaryContainer
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -251,16 +303,23 @@ private fun TodayHabitsSummary(completed: Int, total: Int) {
         ) {
             Column {
                 Text(
-                    text = "오늘의 습관",
+                    text = if (allDone) "오늘의 습관 완료!" else "오늘의 습관",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = if (allDone)
+                        MaterialTheme.colorScheme.onTertiaryContainer
+                    else
+                        MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = if (total == 0) "등록된 습관이 없어요"
+                    else if (allDone) "대단해요! 오늘도 갓생 완료 ✨"
                     else "$completed / $total 완료",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                    color = if (allDone)
+                        MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
+                    else
+                        MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                 )
             }
 
@@ -270,7 +329,7 @@ private fun TodayHabitsSummary(completed: Int, total: Int) {
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(
-                            if (completed == total && total > 0)
+                            if (allDone)
                                 MaterialTheme.colorScheme.tertiary
                             else
                                 MaterialTheme.colorScheme.secondary
@@ -278,7 +337,7 @@ private fun TodayHabitsSummary(completed: Int, total: Int) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (completed == total && total > 0) "✨" else "$completed/$total",
+                        text = if (allDone) "✨" else "$completed/$total",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSecondary,
                         textAlign = TextAlign.Center

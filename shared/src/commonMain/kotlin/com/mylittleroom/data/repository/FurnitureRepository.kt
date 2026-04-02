@@ -32,4 +32,17 @@ class FurnitureRepository(private val furnitureDao: FurnitureDao) {
     suspend fun unlockFurniture(furnitureId: String) {
         furnitureDao.unlockFurniture(furnitureId)
     }
+
+    suspend fun getLockedFurniture(): List<FurnitureEntity> {
+        return furnitureDao.getLockedFurniture()
+    }
+
+    suspend fun tryRandomUnlock(): FurnitureEntity? {
+        val locked = furnitureDao.getLockedFurniture()
+        val pick = com.mylittleroom.domain.RewardEngine.pickRandomLockedFurniture(locked)
+        if (pick != null) {
+            furnitureDao.unlockFurniture(pick.id)
+        }
+        return pick
+    }
 }
