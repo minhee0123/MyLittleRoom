@@ -33,6 +33,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+            implementation(compose.materialIconsExtended)
 
             // Navigation
             implementation(libs.navigation.compose)
@@ -51,6 +52,9 @@ kotlin {
 
             // Serialization
             implementation(libs.kotlinx.serialization.json)
+
+            // DateTime
+            implementation(libs.kotlinx.datetime)
         }
 
         androidMain.dependencies {

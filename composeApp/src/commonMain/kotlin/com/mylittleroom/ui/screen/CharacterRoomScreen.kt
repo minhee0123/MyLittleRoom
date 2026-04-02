@@ -21,15 +21,26 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mylittleroom.domain.model.CharacterStage
+import com.mylittleroom.ui.viewmodel.CharacterRoomUiState
+import com.mylittleroom.ui.viewmodel.CharacterRoomViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CharacterRoomScreen(modifier: Modifier = Modifier) {
+fun CharacterRoomScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CharacterRoomViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -37,28 +48,32 @@ fun CharacterRoomScreen(modifier: Modifier = Modifier) {
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ── Status Bar ──
-        StatusBar(level = 3, currentExp = 65, maxExp = 100)
+        StatusBar(
+            level = uiState.level,
+            currentExp = uiState.currentExp,
+            maxExp = uiState.maxExp,
+            characterStage = uiState.characterStage
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ── Room Area ──
-        RoomArea()
+        RoomArea(characterStage = uiState.characterStage)
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ── Furniture Slots ──
-        FurnitureSlots()
+        FurnitureSlots(uiState = uiState)
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // ── Today's Habits ──
-        TodayHabitsSummary(completed = 2, total = 5)
+        TodayHabitsSummary(
+            completed = uiState.todayHabitsCompleted,
+            total = uiState.todayHabitsTotal
+        )
     }
 }
 
 @Composable
-private fun StatusBar(level: Int, currentExp: Int, maxExp: Int) {
+private fun StatusBar(level: Int, currentExp: Int, maxExp: Int, characterStage: CharacterStage) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -72,7 +87,6 @@ private fun StatusBar(level: Int, currentExp: Int, maxExp: Int) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Level badge
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -90,14 +104,21 @@ private fun StatusBar(level: Int, currentExp: Int, maxExp: Int) {
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "My Little Room",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = characterStage.stageName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = characterStage.emoji,
+                        fontSize = 16.sp
+                    )
+                }
                 Spacer(modifier = Modifier.height(6.dp))
                 LinearProgressIndicator(
-                    progress = { currentExp / maxExp.toFloat() },
+                    progress = { if (maxExp > 0) currentExp / maxExp.toFloat() else 0f },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(8.dp)
@@ -117,7 +138,7 @@ private fun StatusBar(level: Int, currentExp: Int, maxExp: Int) {
 }
 
 @Composable
-private fun RoomArea() {
+private fun RoomArea(characterStage: CharacterStage) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,18 +154,18 @@ private fun RoomArea() {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "\uD83C\uDFE0",
-                    fontSize = 64.sp
+                    text = characterStage.emoji,
+                    fontSize = 72.sp
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "My Room",
+                    text = characterStage.stageName,
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Complete habits to decorate!",
+                    text = characterStage.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
@@ -154,31 +175,49 @@ private fun RoomArea() {
 }
 
 @Composable
-private fun FurnitureSlots() {
+private fun FurnitureSlots(uiState: CharacterRoomUiState) {
+    val slotDefinitions = listOf(
+        Pair("wall", Pair("\uD83D\uDECB\uFE0F", "소파")),
+        Pair("wall2", Pair("\uD83D\uDDBC\uFE0F", "액자")),
+        Pair("floor", Pair("\uD83C\uDF3F", "화분")),
+        Pair("desk", Pair("\uD83D\uDCA1", "조명"))
+    )
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        val emojis = listOf("\uD83D\uDECB\uFE0F", "\uD83D\uDDBC\uFE0F", "\uD83C\uDF3F", "\uD83D\uDCA1")
-        val labels = listOf("Sofa", "Frame", "Plant", "Lamp")
-
-        emojis.zip(labels).forEach { (emoji, label) ->
-            FurnitureSlot(emoji = emoji, label = label)
+        slotDefinitions.forEach { (slot, emojiLabel) ->
+            val (defaultEmoji, label) = emojiLabel
+            val placed = uiState.placedFurniture.find { it.slotPosition == slot }
+            FurnitureSlot(
+                emoji = defaultEmoji,
+                label = if (placed != null) placed.name else label,
+                isOccupied = placed != null
+            )
         }
     }
 }
 
 @Composable
-private fun FurnitureSlot(emoji: String, label: String) {
+private fun FurnitureSlot(emoji: String, label: String, isOccupied: Boolean) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
                 .size(64.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.tertiaryContainer)
+                .background(
+                    if (isOccupied)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.tertiaryContainer
+                )
                 .border(
                     width = 1.5.dp,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                    color = if (isOccupied)
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                    else
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(16.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -212,31 +251,39 @@ private fun TodayHabitsSummary(completed: Int, total: Int) {
         ) {
             Column {
                 Text(
-                    text = "Today's Habits",
+                    text = "오늘의 습관",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "$completed of $total completed",
+                    text = if (total == 0) "등록된 습관이 없어요"
+                    else "$completed / $total 완료",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondary),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "$completed/$total",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    textAlign = TextAlign.Center
-                )
+            if (total > 0) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (completed == total && total > 0)
+                                MaterialTheme.colorScheme.tertiary
+                            else
+                                MaterialTheme.colorScheme.secondary
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (completed == total && total > 0) "✨" else "$completed/$total",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }
