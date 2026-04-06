@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.mylittleroom.domain.RewardEvent
+import com.mylittleroom.platform.HapticFeedback
 
 @Composable
 fun RewardDialog(
@@ -40,7 +41,10 @@ fun RewardDialog(
         animationSpec = spring(dampingRatio = 0.5f, stiffness = 300f)
     )
 
-    LaunchedEffect(Unit) { appeared = true }
+    LaunchedEffect(Unit) {
+        appeared = true
+        HapticFeedback.success()
+    }
 
     Dialog(onDismissRequest = onDismiss) {
         Column(

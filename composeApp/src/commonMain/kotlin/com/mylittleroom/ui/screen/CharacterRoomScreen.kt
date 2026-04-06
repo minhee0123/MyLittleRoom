@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mylittleroom.domain.model.CharacterStage
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.TextButton
 import com.mylittleroom.ui.viewmodel.CharacterRoomUiState
 import com.mylittleroom.ui.viewmodel.CharacterRoomViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -47,6 +49,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CharacterRoomScreen(
     modifier: Modifier = Modifier,
+    onFurniturePlacement: () -> Unit = {},
     viewModel: CharacterRoomViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -75,7 +78,7 @@ fun CharacterRoomScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        FurnitureSlots(uiState = uiState)
+        FurnitureSlots(uiState = uiState, onPlacement = onFurniturePlacement)
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -222,7 +225,7 @@ private fun AnimatedCharacter(emoji: String, isHappy: Boolean) {
 }
 
 @Composable
-private fun FurnitureSlots(uiState: CharacterRoomUiState) {
+private fun FurnitureSlots(uiState: CharacterRoomUiState, onPlacement: () -> Unit = {}) {
     val slotDefinitions = listOf(
         Pair("wall", Pair("\uD83D\uDECB\uFE0F", "소파")),
         Pair("wall2", Pair("\uD83D\uDDBC\uFE0F", "액자")),
@@ -230,17 +233,27 @@ private fun FurnitureSlots(uiState: CharacterRoomUiState) {
         Pair("desk", Pair("\uD83D\uDCA1", "조명"))
     )
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        slotDefinitions.forEach { (slot, emojiLabel) ->
-            val (defaultEmoji, label) = emojiLabel
-            val placed = uiState.placedFurniture.find { it.slotPosition == slot }
-            FurnitureSlot(
-                emoji = defaultEmoji,
-                label = if (placed != null) placed.name else label,
-                isOccupied = placed != null
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            slotDefinitions.forEach { (slot, emojiLabel) ->
+                val (defaultEmoji, label) = emojiLabel
+                val placed = uiState.placedFurniture.find { it.slotPosition == slot }
+                FurnitureSlot(
+                    emoji = defaultEmoji,
+                    label = if (placed != null) placed.name else label,
+                    isOccupied = placed != null
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        TextButton(onClick = onPlacement) {
+            Text(
+                text = "🪑 방 꾸미기",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }

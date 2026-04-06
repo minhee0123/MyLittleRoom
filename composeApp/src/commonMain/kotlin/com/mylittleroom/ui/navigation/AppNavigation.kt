@@ -12,7 +12,11 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -20,16 +24,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mylittleroom.data.entity.HabitEntity
+import com.mylittleroom.data.repository.HabitRepository
 import com.mylittleroom.ui.screen.AddHabitScreen
 import com.mylittleroom.ui.screen.CharacterRoomScreen
+import com.mylittleroom.ui.screen.EditHabitScreen
+import com.mylittleroom.ui.screen.FurniturePlacementScreen
 import com.mylittleroom.ui.screen.HabitListScreen
 import com.mylittleroom.ui.viewmodel.HabitListViewModel
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 @Serializable object RoomRoute
 @Serializable object HabitsRoute
 @Serializable object AddHabitRoute
+@Serializable data class EditHabitRoute(val habitId: Long)
+@Serializable object FurniturePlacementRoute
 
 data class BottomNavItem(
     val label: String,
@@ -95,12 +106,17 @@ fun AppNavigation() {
             modifier = Modifier.padding(padding)
         ) {
             composable<RoomRoute> {
-                CharacterRoomScreen()
+                CharacterRoomScreen(
+                    onFurniturePlacement = {
+                        navController.navigate(FurniturePlacementRoute)
+                    }
+                )
             }
             composable<HabitsRoute> {
                 val viewModel: HabitListViewModel = koinViewModel()
                 HabitListScreen(
                     onAddHabit = { navController.navigate(AddHabitRoute) },
+                    onEditHabit = { habitId -> navController.navigate(EditHabitRoute(habitId)) },
                     viewModel = viewModel
                 )
             }
@@ -112,6 +128,35 @@ fun AppNavigation() {
                         viewModel.addHabit(title, emoji, repeatDays)
                         navController.popBackStack()
                     },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable<EditHabitRoute> { backStackEntry ->
+                val parentEntry = navController.getBackStackEntry(HabitsRoute)
+                val viewModel: HabitListViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
+                val habitRepository: HabitRepository = koinInject()
+
+                val route = backStackEntry.arguments
+                val habitId = route?.getLong("habitId") ?: 0L
+
+                var habit by remember { mutableStateOf<HabitEntity?>(null) }
+                LaunchedEffect(habitId) {
+                    habit = habitRepository.getHabitById(habitId)
+                }
+
+                habit?.let { h ->
+                    EditHabitScreen(
+                        habit = h,
+                        onSave = { updated ->
+                            viewModel.updateHabit(updated)
+                            navController.popBackStack()
+                        },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+            }
+            composable<FurniturePlacementRoute> {
+                FurniturePlacementScreen(
                     onBack = { navController.popBackStack() }
                 )
             }

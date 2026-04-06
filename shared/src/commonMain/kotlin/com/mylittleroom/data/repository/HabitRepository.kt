@@ -31,6 +31,14 @@ class HabitRepository(
         habitDao.delete(habit)
     }
 
+    suspend fun updateHabit(habit: HabitEntity) {
+        habitDao.update(habit)
+    }
+
+    suspend fun getHabitById(id: Long): HabitEntity? {
+        return habitDao.getHabitById(id)
+    }
+
     suspend fun toggleCompletion(habitId: Long): Boolean {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
         val isCompleted = habitLogDao.isCompletedOn(habitId, today)

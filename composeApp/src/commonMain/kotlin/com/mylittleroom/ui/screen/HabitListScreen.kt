@@ -34,6 +34,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mylittleroom.domain.RewardEvent
+import com.mylittleroom.platform.HapticFeedback
 import com.mylittleroom.ui.component.RewardDialog
 import com.mylittleroom.ui.viewmodel.HabitListViewModel
 import com.mylittleroom.ui.viewmodel.HabitWithStatus
@@ -57,6 +59,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HabitListScreen(
     onAddHabit: () -> Unit,
+    onEditHabit: (Long) -> Unit = {},
     viewModel: HabitListViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -141,7 +144,11 @@ fun HabitListScreen(
                     items(uiState.habits, key = { it.habit.id }) { habitWithStatus ->
                         HabitCard(
                             habitWithStatus = habitWithStatus,
-                            onToggle = { viewModel.toggleHabitCompletion(habitWithStatus.habit.id) },
+                            onToggle = {
+                                HapticFeedback.light()
+                                viewModel.toggleHabitCompletion(habitWithStatus.habit.id)
+                            },
+                            onEdit = { onEditHabit(habitWithStatus.habit.id) },
                             onDelete = { viewModel.deleteHabit(habitWithStatus.habit) }
                         )
                     }
@@ -156,6 +163,7 @@ fun HabitListScreen(
 private fun HabitCard(
     habitWithStatus: HabitWithStatus,
     onToggle: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     val containerColor by animateColorAsState(
@@ -234,14 +242,23 @@ private fun HabitCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
+
+            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = "수정",
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
 
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = "삭제",
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }

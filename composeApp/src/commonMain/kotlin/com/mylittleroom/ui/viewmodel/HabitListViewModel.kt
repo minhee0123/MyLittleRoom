@@ -124,6 +124,12 @@ class HabitListViewModel(
         }
     }
 
+    fun updateHabit(habit: HabitEntity) {
+        viewModelScope.launch {
+            habitRepository.updateHabit(habit)
+        }
+    }
+
     fun deleteHabit(habit: HabitEntity) {
         viewModelScope.launch {
             habitRepository.deleteHabit(habit)
