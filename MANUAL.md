@@ -339,7 +339,7 @@ composeApp/src/commonMain/kotlin/com/mylittleroom/
 
 | 항목 | 상태 | 비고 |
 |------|------|------|
-| Lottie 캐릭터 애니메이션 | 미구현 | 디자이너 에셋(.json) 필요 |
+| Lottie 캐릭터 애니메이션 | 구현 완료 | Compottie 2.0 + 5단계 에셋 + 축하 애니메이션 |
 | Pretendard 커스텀 폰트 | 미구현 | 폰트 파일 필요 |
 | iOS Xcode 위젯 타겟 | 스캐폴딩만 | Xcode에서 Widget Extension 추가 필요 |
 | iOS initKoin() 연결 | 미구현 | Swift AppDelegate에서 `MainViewControllerKt.doInitKoin()` 호출 필요 |

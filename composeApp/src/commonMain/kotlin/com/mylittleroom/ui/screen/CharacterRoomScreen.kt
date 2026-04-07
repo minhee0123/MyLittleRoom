@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +45,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material3.TextButton
 import com.mylittleroom.ui.viewmodel.CharacterRoomUiState
 import com.mylittleroom.ui.viewmodel.CharacterRoomViewModel
+import androidx.compose.foundation.Image
+import io.github.alexzhirkevich.compottie.Compottie
+import io.github.alexzhirkevich.compottie.LottieCompositionSpec
+import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
+import io.github.alexzhirkevich.compottie.rememberLottieComposition
+import io.github.alexzhirkevich.compottie.rememberLottiePainter
+import mylittleroom.composeapp.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -154,6 +163,7 @@ private fun StatusBar(level: Int, currentExp: Int, maxExp: Int, characterStage: 
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun RoomArea(characterStage: CharacterStage, allCompleted: Boolean) {
     Card(
@@ -169,10 +179,30 @@ private fun RoomArea(characterStage: CharacterStage, allCompleted: Boolean) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            // Celebration overlay when all completed
+            if (allCompleted) {
+                val celebrationComposition by rememberLottieComposition {
+                    LottieCompositionSpec.JsonString(
+                        Res.readBytes("files/celebration.json").decodeToString()
+                    )
+                }
+                val celebrationProgress by animateLottieCompositionAsState(
+                    celebrationComposition,
+                    iterations = Compottie.IterateForever
+                )
+                Image(
+                    painter = rememberLottiePainter(
+                        composition = celebrationComposition,
+                        progress = { celebrationProgress }
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // Animated character
                 AnimatedCharacter(
-                    emoji = characterStage.emoji,
+                    characterStage = characterStage,
                     isHappy = allCompleted
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -195,31 +225,45 @@ private fun RoomArea(characterStage: CharacterStage, allCompleted: Boolean) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun AnimatedCharacter(emoji: String, isHappy: Boolean) {
-    val infiniteTransition = rememberInfiniteTransition()
+private fun AnimatedCharacter(characterStage: CharacterStage, isHappy: Boolean) {
+    val lottieFileName = remember(characterStage) {
+        when (characterStage) {
+            CharacterStage.STAR_DUST -> "files/star_dust.json"
+            CharacterStage.SMALL_STAR -> "files/small_star.json"
+            CharacterStage.BRIGHT_STAR -> "files/bright_star.json"
+            CharacterStage.BIG_STAR -> "files/big_star.json"
+            CharacterStage.CONSTELLATION -> "files/constellation.json"
+        }
+    }
 
-    // Floating bounce animation
-    val offsetY by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = if (isHappy) -12f else -6f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = if (isHappy) 600 else 1200),
-            repeatMode = RepeatMode.Reverse
+    val composition by rememberLottieComposition {
+        LottieCompositionSpec.JsonString(
+            Res.readBytes(lottieFileName).decodeToString()
         )
+    }
+
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = Compottie.IterateForever,
+        speed = if (isHappy) 1.5f else 1f
     )
 
     // Scale pulse when happy
     val scale by animateFloatAsState(
-        targetValue = if (isHappy) 1.1f else 1f,
+        targetValue = if (isHappy) 1.15f else 1f,
         animationSpec = spring(dampingRatio = 0.4f, stiffness = 200f)
     )
 
-    Text(
-        text = emoji,
-        fontSize = 72.sp,
+    Image(
+        painter = rememberLottiePainter(
+            composition = composition,
+            progress = { progress }
+        ),
+        contentDescription = characterStage.stageName,
         modifier = Modifier
-            .offset { IntOffset(0, offsetY.toInt()) }
+            .size(120.dp)
             .scale(scale)
     )
 }

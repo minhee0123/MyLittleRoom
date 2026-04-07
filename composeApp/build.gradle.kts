@@ -55,6 +55,10 @@ kotlin {
 
             // DateTime
             implementation(libs.kotlinx.datetime)
+
+            // Lottie
+            implementation(libs.compottie)
+            implementation(libs.compottie.resources)
         }
 
         androidMain.dependencies {
