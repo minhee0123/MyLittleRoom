@@ -46,6 +46,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mylittleroom.data.entity.HabitEntity
 
+/**
+ * 습관 수정 화면 — 기존 습관의 이모지, 제목, 반복 요일을 수정한다.
+ * AddHabitScreen과 동일한 UI 구조이며 기존 값으로 초기화.
+ *
+ * @param habit  수정 대상 습관 엔티티
+ * @param onSave 수정 완료 콜백 (업데이트된 HabitEntity 전달)
+ * @param onBack 뒤로가기 콜백
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun EditHabitScreen(

@@ -30,6 +30,13 @@ import androidx.compose.ui.window.Dialog
 import com.mylittleroom.domain.RewardEvent
 import com.mylittleroom.platform.HapticFeedback
 
+/**
+ * 보상 다이얼로그 — 레벨업/가구 해금/연속 마일스톤 보상을 스프링 스케일 애니메이션과 함께 표시.
+ * 표시 시 성공 햅틱 피드백 발생.
+ *
+ * @param event    표시할 보상 이벤트 (LevelUp / FurnitureUnlocked / StreakMilestone)
+ * @param onDismiss 다이얼로그 닫기 콜백
+ */
 @Composable
 fun RewardDialog(
     event: RewardEvent,

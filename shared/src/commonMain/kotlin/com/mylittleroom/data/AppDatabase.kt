@@ -13,6 +13,10 @@ import com.mylittleroom.data.entity.HabitEntity
 import com.mylittleroom.data.entity.HabitLogEntity
 import com.mylittleroom.data.entity.UserStatusEntity
 
+/**
+ * Room 데이터베이스 — habits, habit_logs, furniture, user_status 4개 테이블.
+ * KSP가 AppDatabaseConstructor를 통해 플랫폼별 구현체를 자동 생성한다.
+ */
 @Database(
     entities = [
         HabitEntity::class,
@@ -35,6 +39,8 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
-// Room will generate the implementation
-@Suppress("NO_ACTUAL_FOR_EXPECT")
-expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase>
+// Room KSP will generate the actual implementation
+@Suppress("NO_ACTUAL_FOR_EXPECT", "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA")
+expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
+    override fun initialize(): AppDatabase
+}

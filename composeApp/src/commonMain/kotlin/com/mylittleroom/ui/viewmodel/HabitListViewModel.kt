@@ -22,17 +22,23 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
+/** 습관 + 오늘 완료 여부 + 연속일수를 묶은 UI 모델 */
 data class HabitWithStatus(
     val habit: HabitEntity,
     val isCompletedToday: Boolean,
     val streak: Int = 0
 )
 
+/** 습관 목록 화면의 UI 상태 */
 data class HabitListUiState(
     val habits: List<HabitWithStatus> = emptyList(),
     val isLoading: Boolean = true
 )
 
+/**
+ * 습관 목록 ViewModel — 습관 CRUD, 완료 토글, 보상 이벤트 발행을 담당한다.
+ * 습관 체크 → EXP 추가 → 레벨업/마일스톤 판정 → 보상 다이얼로그 트리거.
+ */
 class HabitListViewModel(
     private val habitRepository: HabitRepository,
     private val userRepository: UserRepository,
@@ -40,6 +46,8 @@ class HabitListViewModel(
 ) : ViewModel() {
 
     private val _streaks = MutableStateFlow<Map<Long, Int>>(emptyMap())
+
+    /** 보상 이벤트 (레벨업/마일스톤/가구) — UI에서 collect하여 다이얼로그 표시 */
     private val _rewardEvents = MutableSharedFlow<RewardEvent>()
     val rewardEvents = _rewardEvents.asSharedFlow()
 
@@ -76,6 +84,7 @@ class HabitListViewModel(
         }
     }
 
+    /** 습관 완료 토글 — 완료 시 EXP 추가 + 레벨업/마일스톤/가구 보상 판정 */
     fun toggleHabitCompletion(habitId: Long) {
         viewModelScope.launch {
             val nowCompleted = habitRepository.toggleCompletion(habitId)
@@ -118,24 +127,28 @@ class HabitListViewModel(
         }
     }
 
+    /** 새 습관을 추가한다. */
     fun addHabit(title: String, emoji: String, repeatDays: String) {
         viewModelScope.launch {
             habitRepository.addHabit(title, emoji, repeatDays)
         }
     }
 
+    /** 기존 습관 정보를 수정한다. */
     fun updateHabit(habit: HabitEntity) {
         viewModelScope.launch {
             habitRepository.updateHabit(habit)
         }
     }
 
+    /** 습관을 삭제한다. */
     fun deleteHabit(habit: HabitEntity) {
         viewModelScope.launch {
             habitRepository.deleteHabit(habit)
         }
     }
 
+    /** 오늘 요일에 해당하는 습관만 필터링 (repeatDays CSV 기준) */
     private fun filterTodayHabits(habits: List<HabitEntity>): List<HabitEntity> {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
         val dayIndex = today.dayOfWeek.ordinal

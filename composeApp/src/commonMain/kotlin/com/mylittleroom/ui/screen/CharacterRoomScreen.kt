@@ -55,6 +55,12 @@ import mylittleroom.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * 캐릭터 방 화면 — 캐릭터, 레벨/EXP 상태바, 가구 슬롯, 오늘의 습관 요약을 표시한다.
+ * Lottie 애니메이션으로 캐릭터를 렌더링하며, 습관 전체 완료 시 축하 이펙트를 재생.
+ *
+ * @param onFurniturePlacement 가구 배치 화면으로 이동하는 콜백
+ */
 @Composable
 fun CharacterRoomScreen(
     modifier: Modifier = Modifier,
@@ -98,6 +104,7 @@ fun CharacterRoomScreen(
     }
 }
 
+/** 상단 상태바 — 레벨 뱃지, 캐릭터 단계명, EXP 프로그레스바 표시 */
 @Composable
 private fun StatusBar(level: Int, currentExp: Int, maxExp: Int, characterStage: CharacterStage) {
     Card(
@@ -163,6 +170,7 @@ private fun StatusBar(level: Int, currentExp: Int, maxExp: Int, characterStage: 
     }
 }
 
+/** 방 영역 — Lottie 캐릭터 + 전체 완료 시 축하 애니메이션 오버레이 */
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun RoomArea(characterStage: CharacterStage, allCompleted: Boolean) {
@@ -225,6 +233,7 @@ private fun RoomArea(characterStage: CharacterStage, allCompleted: Boolean) {
     }
 }
 
+/** Lottie 캐릭터 — 진화 단계별 JSON 에셋 로드, 완료 시 1.5배속 + 스케일 펄스 */
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AnimatedCharacter(characterStage: CharacterStage, isHappy: Boolean) {
@@ -268,6 +277,7 @@ private fun AnimatedCharacter(characterStage: CharacterStage, isHappy: Boolean) 
     )
 }
 
+/** 가구 슬롯 영역 — wall/wall2/floor/desk 4개 슬롯 + "방 꾸미기" 버튼 */
 @Composable
 private fun FurnitureSlots(uiState: CharacterRoomUiState, onPlacement: () -> Unit = {}) {
     val slotDefinitions = listOf(
@@ -303,6 +313,7 @@ private fun FurnitureSlots(uiState: CharacterRoomUiState, onPlacement: () -> Uni
     }
 }
 
+/** 개별 가구 슬롯 — 배치 여부에 따라 배경색 변경 */
 @Composable
 private fun FurnitureSlot(emoji: String, label: String, isOccupied: Boolean) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -337,6 +348,7 @@ private fun FurnitureSlot(emoji: String, label: String, isOccupied: Boolean) {
     }
 }
 
+/** 하단 오늘의 습관 요약 카드 — 완료/전체 개수, 전체 완료 시 축하 메시지 표시 */
 @Composable
 private fun TodayHabitsSummary(completed: Int, total: Int) {
     val allDone = completed == total && total > 0

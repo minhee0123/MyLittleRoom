@@ -46,6 +46,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * 습관 추가 화면 — 이모지 선택, 제목 입력, 반복 요일 선택 후 저장.
+ *
+ * @param onSave 저장 콜백 (title, emoji, repeatDays CSV)
+ * @param onBack 뒤로가기 콜백
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddHabitScreen(

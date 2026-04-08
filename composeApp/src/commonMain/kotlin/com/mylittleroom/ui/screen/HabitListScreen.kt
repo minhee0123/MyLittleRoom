@@ -56,6 +56,13 @@ import com.mylittleroom.ui.viewmodel.HabitListViewModel
 import com.mylittleroom.ui.viewmodel.HabitWithStatus
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * 습관 목록 화면 — 오늘 해당 요일의 습관 카드 목록, 완료 토글, 보상 다이얼로그를 표시한다.
+ * FAB으로 습관 추가, 각 카드에서 수정/삭제 가능.
+ *
+ * @param onAddHabit   습관 추가 화면으로 이동하는 콜백
+ * @param onEditHabit  습관 수정 화면으로 이동하는 콜백 (habitId 전달)
+ */
 @Composable
 fun HabitListScreen(
     onAddHabit: () -> Unit,
@@ -159,6 +166,7 @@ fun HabitListScreen(
     }
 }
 
+/** 습관 카드 — 이모지·제목·연속일수 표시, 탭으로 완료 토글, 누르면 스케일 애니메이션 */
 @Composable
 private fun HabitCard(
     habitWithStatus: HabitWithStatus,

@@ -49,6 +49,11 @@ import com.mylittleroom.data.entity.FurnitureEntity
 import com.mylittleroom.ui.viewmodel.FurniturePlacementViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * 가구 배치 화면 — 슬롯(벽1/벽2/바닥/책상)을 선택한 뒤, 해금된 가구를 그리드에서 골라 배치한다.
+ *
+ * @param onBack 뒤로가기 콜백
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FurniturePlacementScreen(
@@ -189,6 +194,7 @@ fun FurniturePlacementScreen(
     }
 }
 
+/** 가구 그리드 아이템 — 카테고리별 이모지, 이름, 배치 상태 표시 */
 @Composable
 private fun FurnitureItem(
     furniture: FurnitureEntity,

@@ -1,73 +1,73 @@
 package com.mylittleroom.designsystem
 
+/**
+ * 디자인 시스템 컬러 팔레트 — Material3 톤별 컬러 토큰 정의.
+ * Primary(Muted Rose), Secondary(Dusty Blue), Tertiary(Sage),
+ * Neutral(Cool Gray), Accent(Warm Apricot, Soft Lilac), Error 컬러를 포함.
+ */
 import androidx.compose.ui.graphics.Color
 
-// ── Primary: Soft Pink ──
-val Pink10 = Color(0xFF3B0A1E)
-val Pink20 = Color(0xFF5C1632)
-val Pink30 = Color(0xFF832248)
-val Pink40 = Color(0xFFAD3362)
-val Pink50 = Color(0xFFD4527F)
-val Pink60 = Color(0xFFE87FA3)
-val Pink70 = Color(0xFFF2A5C0)
-val Pink80 = Color(0xFFF8C8D9)
-val Pink90 = Color(0xFFFDE4ED)
-val Pink95 = Color(0xFFFFF0F5)
-val Pink99 = Color(0xFFFFFBFC)
+// ── Primary: Muted Rose (차분한 로즈) ──
+val Rose10 = Color(0xFF2B0F18)
+val Rose20 = Color(0xFF4D1F2E)
+val Rose30 = Color(0xFF753A4D)
+val Rose40 = Color(0xFF9E5A70)
+val Rose50 = Color(0xFFBF7D93)
+val Rose60 = Color(0xFFD49AAD)
+val Rose70 = Color(0xFFE4B7C5)
+val Rose80 = Color(0xFFF0D3DC)
+val Rose90 = Color(0xFFF8EBF0)
+val Rose95 = Color(0xFFFCF5F7)
+val Rose99 = Color(0xFFFFFBFC)
 
-// ── Secondary: Lavender ──
-val Lavender10 = Color(0xFF1E0A3B)
-val Lavender20 = Color(0xFF32165C)
-val Lavender30 = Color(0xFF4B2283)
-val Lavender40 = Color(0xFF6733AD)
-val Lavender50 = Color(0xFF8552D4)
-val Lavender60 = Color(0xFFA37FE8)
-val Lavender70 = Color(0xFFBDA5F2)
-val Lavender80 = Color(0xFFD5C8F8)
-val Lavender90 = Color(0xFFEBE4FD)
-val Lavender95 = Color(0xFFF5F0FF)
-val Lavender99 = Color(0xFFFCFBFF)
+// ── Secondary: Dusty Blue (먼지 낀 블루) ──
+val DustyBlue10 = Color(0xFF0F1B2B)
+val DustyBlue20 = Color(0xFF1F344D)
+val DustyBlue30 = Color(0xFF385068)
+val DustyBlue40 = Color(0xFF506D86)
+val DustyBlue50 = Color(0xFF6D8BA5)
+val DustyBlue60 = Color(0xFF8DA7BE)
+val DustyBlue70 = Color(0xFFADC2D4)
+val DustyBlue80 = Color(0xFFCDDCE8)
+val DustyBlue90 = Color(0xFFE8EFF5)
+val DustyBlue95 = Color(0xFFF3F7FA)
+val DustyBlue99 = Color(0xFFFBFCFE)
 
-// ── Tertiary: Creamy Mint ──
-val Mint10 = Color(0xFF0A3B2E)
-val Mint20 = Color(0xFF165C47)
-val Mint30 = Color(0xFF228363)
-val Mint40 = Color(0xFF33AD84)
-val Mint50 = Color(0xFF52D4A5)
-val Mint60 = Color(0xFF7FE8BF)
-val Mint70 = Color(0xFFA5F2D4)
-val Mint80 = Color(0xFFC8F8E5)
-val Mint90 = Color(0xFFE4FDF2)
-val Mint95 = Color(0xFFF0FFF8)
-val Mint99 = Color(0xFFFBFFFD)
+// ── Tertiary: Sage (세이지 그린) ──
+val Sage10 = Color(0xFF121F16)
+val Sage20 = Color(0xFF253D2D)
+val Sage30 = Color(0xFF3D5E48)
+val Sage40 = Color(0xFF577C64)
+val Sage50 = Color(0xFF749982)
+val Sage60 = Color(0xFF93B29E)
+val Sage70 = Color(0xFFB2CBB9)
+val Sage80 = Color(0xFFD1E2D5)
+val Sage90 = Color(0xFFE9F2EB)
+val Sage95 = Color(0xFFF4F9F5)
+val Sage99 = Color(0xFFFBFDFB)
 
-// ── Neutral: Warm Gray ──
-val WarmGray10 = Color(0xFF1C1B1E)
-val WarmGray20 = Color(0xFF313033)
-val WarmGray30 = Color(0xFF484649)
-val WarmGray40 = Color(0xFF605D62)
-val WarmGray50 = Color(0xFF79767A)
-val WarmGray60 = Color(0xFF938F94)
-val WarmGray70 = Color(0xFFAEAAAF)
-val WarmGray80 = Color(0xFFCAC5CA)
-val WarmGray90 = Color(0xFFE6E1E6)
-val WarmGray95 = Color(0xFFF4EFF4)
-val WarmGray99 = Color(0xFFFFFBFF)
+// ── Neutral: Cool Gray (쿨 그레이) ──
+val Gray10 = Color(0xFF1A1C1E)
+val Gray20 = Color(0xFF2F3133)
+val Gray30 = Color(0xFF464849)
+val Gray40 = Color(0xFF5E6061)
+val Gray50 = Color(0xFF77797A)
+val Gray60 = Color(0xFF919394)
+val Gray70 = Color(0xFFABADAE)
+val Gray80 = Color(0xFFC7C9CA)
+val Gray90 = Color(0xFFE3E4E5)
+val Gray95 = Color(0xFFF1F2F2)
+val Gray99 = Color(0xFFFCFCFC)
 
-// ── Accent: Peach ──
-val Peach40 = Color(0xFFD4845A)
-val Peach80 = Color(0xFFFAD4BC)
-val Peach90 = Color(0xFFFDEDE2)
+// ── Accent: Warm Apricot ──
+val Apricot50 = Color(0xFFD4976D)
+val Apricot80 = Color(0xFFF2DCC8)
+val Apricot90 = Color(0xFFFAF0E6)
 
-// ── Accent: Baby Blue ──
-val BabyBlue40 = Color(0xFF5A8FD4)
-val BabyBlue80 = Color(0xFFBCD4FA)
-val BabyBlue90 = Color(0xFFE2EDFD)
-
-// ── Accent: Butter Yellow ──
-val ButterYellow40 = Color(0xFFD4C25A)
-val ButterYellow80 = Color(0xFFFAF0BC)
-val ButterYellow90 = Color(0xFFFDF8E2)
+// ── Accent: Soft Lilac ──
+val Lilac50 = Color(0xFF9E8BB8)
+val Lilac80 = Color(0xFFD8CEE6)
+val Lilac90 = Color(0xFFEDE8F4)
 
 // ── Error ──
 val ErrorLight = Color(0xFFBA1A1A)
