@@ -7,6 +7,7 @@ import com.mylittleroom.data.repository.HabitRepository
 import com.mylittleroom.data.repository.UserRepository
 import org.koin.dsl.module
 
+/** 공유 모듈 — DB, DAO, Repository를 Koin 싱글톤으로 제공한다. */
 val sharedModule = module {
     single<AppDatabase> { buildAppDatabase(get()) }
     single { get<AppDatabase>().habitDao() }

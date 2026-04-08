@@ -39,6 +39,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
+/** Android 홈 화면 위젯 — 오늘의 습관 목록과 캐릭터 레벨을 표시한다. */
 class HabitWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -153,6 +154,7 @@ private fun HabitRow(habit: WidgetHabit) {
 
 val habitIdKey = ActionParameters.Key<Long>("habit_id")
 
+/** 위젯에서 습관 완료를 토글하는 Glance 액션 콜백 */
 class ToggleHabitAction : ActionCallback {
     override suspend fun onAction(
         context: Context,

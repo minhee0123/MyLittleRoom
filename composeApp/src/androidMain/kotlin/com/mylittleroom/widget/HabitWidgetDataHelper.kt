@@ -10,6 +10,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
+/** 위젯에 표시할 데이터 모델 */
 data class WidgetData(
     val level: Int,
     val currentExp: Int,
@@ -27,6 +28,7 @@ data class WidgetHabit(
     val isCompleted: Boolean
 )
 
+/** Room DB에 직접 접근하여 위젯용 데이터를 로드한다 (Koin 미사용). */
 suspend fun loadWidgetData(context: Context): WidgetData {
     val db = buildAppDatabase(AndroidDatabaseFactory(context))
     try {

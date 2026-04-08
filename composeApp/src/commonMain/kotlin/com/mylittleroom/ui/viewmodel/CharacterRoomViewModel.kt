@@ -21,6 +21,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
+/** 캐릭터 방 화면의 UI 상태 — 레벨, EXP, 캐릭터 단계, 배치된 가구, 오늘 습관 현황 */
 data class CharacterRoomUiState(
     val level: Int = 1,
     val currentExp: Int = 0,
@@ -32,6 +33,10 @@ data class CharacterRoomUiState(
     val isLoading: Boolean = true
 )
 
+/**
+ * 캐릭터 방 ViewModel — 유저 상태/습관/가구 Flow를 결합하여 방 화면 상태를 제공한다.
+ * init에서 유저 초기화 + 기본 가구 삽입을 수행.
+ */
 class CharacterRoomViewModel(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,

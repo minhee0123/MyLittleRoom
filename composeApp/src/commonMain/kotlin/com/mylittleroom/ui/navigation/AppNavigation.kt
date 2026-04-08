@@ -36,11 +36,12 @@ import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
 
-@Serializable object RoomRoute
-@Serializable object HabitsRoute
-@Serializable object AddHabitRoute
-@Serializable data class EditHabitRoute(val habitId: Long)
-@Serializable object FurniturePlacementRoute
+// ── 네비게이션 라우트 정의 (type-safe, kotlinx.serialization) ──
+@Serializable object RoomRoute              // 캐릭터 방 (홈)
+@Serializable object HabitsRoute            // 습관 목록
+@Serializable object AddHabitRoute          // 습관 추가
+@Serializable data class EditHabitRoute(val habitId: Long)  // 습관 수정
+@Serializable object FurniturePlacementRoute // 가구 배치
 
 data class BottomNavItem(
     val label: String,
@@ -48,6 +49,10 @@ data class BottomNavItem(
     val route: Any
 )
 
+/**
+ * 앱 최상위 내비게이션 — 바텀 내비게이션(마이룸/습관) + NavHost 5개 화면.
+ * RoomRoute, HabitsRoute에서만 바텀바 표시.
+ */
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()

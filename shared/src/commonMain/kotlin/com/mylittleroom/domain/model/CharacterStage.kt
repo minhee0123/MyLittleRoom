@@ -1,5 +1,9 @@
 package com.mylittleroom.domain.model
 
+/**
+ * 캐릭터 진화 5단계 — 레벨에 따라 외형과 이름이 바뀐다.
+ * Lv.1 별먼지 → Lv.5 작은 별 → Lv.10 반짝 별 → Lv.20 큰 별 → Lv.35 별자리
+ */
 enum class CharacterStage(
     val stageName: String,
     val emoji: String,
